@@ -22,7 +22,7 @@ jobs:
         run: ./build.sh
       # 显示当前目录下的文件和文件夹中的内容
       - name: List files
-        run: dir /s /b
+        run: ls -la
 
       - name: Create Release
         id: create_release

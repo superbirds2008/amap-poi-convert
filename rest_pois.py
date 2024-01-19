@@ -2,10 +2,10 @@ import typer
 import csv
 import requests
 from typing import List, Tuple
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, APIRouter
+from uvicorn import Config, Server
 app = typer.Typer()
-api = FastAPI()
-
+router = APIRouter()
 def get_location(address: str, api_key: str) -> str:
     url = "https://restapi.amap.com/v3/geocode/geo"
     params = {"address": address, "output": "JSON", "key": api_key}
@@ -26,7 +26,7 @@ def get_pois(location: str, api_key: str) -> List[Tuple[str, str]]:
         print(f"Error: {response.status_code} - {response.json().get('info', '')}")
     return []
 
-@api.post("/process_csv")
+@router.post("/process_csv")
 async def process_csv(input_file: UploadFile = File(...), 
                       api_key: str = "e813774a4aea1a0b6ca95f16bcd36cd4", 
                       start_line: int = 0, 
@@ -64,6 +64,13 @@ async def process_csv(input_file: UploadFile = File(...),
                     pois = get_pois(location, api_key)
                     for poi_id, poi_name in pois:
                         writer.writerow([address, poi_id, poi_name])
-
+def main():
+    app = FastAPI()
+    app.include_router(router,
+                       prefix="/api/v1",
+                       tags=["api"],
+                       responses={404: {"description": "Not found"}})
+    server = Server(Config(app=app,
+                        ))
 if __name__ == "__main__":
-    app()
+    main()
