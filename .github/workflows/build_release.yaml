@@ -21,10 +21,19 @@ jobs:
       - name: Run build.sh
         run: |
           bash build.sh
+     - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: pois.build/exe-file-name
           asset_name: exe-file-name
-          release_id: ${{ github.event.release.id }}
+          asset_content_type: application/octet-stream
