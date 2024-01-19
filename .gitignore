@@ -1,2 +1,7 @@
 venv/
 *.pyc
+*.bin
+*.exe
+*.build/
+*.dist/
+build/
