@@ -21,7 +21,8 @@ jobs:
       - name: Run build.sh
         run: |
           bash build.sh
-     - name: Create Release
+
+      - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         with:
