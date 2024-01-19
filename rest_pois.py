@@ -7,7 +7,7 @@ from fastapi import FastAPI, UploadFile, File, APIRouter
 from uvicorn import Config, Server
 import asyncio
 import argparse
-
+from fastapi import Request
 app = typer.Typer()
 router = APIRouter()
 def get_location(address: str, api_key: str) -> str:
@@ -79,8 +79,11 @@ async def process_csv(input_file: UploadFile = File(...),
 #美化布局下面的HTML页面，标题为“高德地图POI批量转换工具”，居中显示，字体大小为24px；两个按钮也居中显示，字体大小为18px；上传文件的按钮宽度为200px，高度为50px，字体大小为18px；submit按钮宽度为100px，高度为30px，字体大小为18px。
 #加入两个示例表格，分别为input.csv和output.csv，用于测试上传文件和下载文件功能。
 @router.get("/upload")
-async def upload():
-    content = """
+async def upload(request: Request):
+    base_url = str(request.base_url)
+    process_csv_url = request.url_for("process_csv")
+    print(base_url)
+    content1 = """
     <html>
         <head>
             <title>高德地图POI批量转换工具</title>
@@ -110,9 +113,11 @@ async def upload():
                 }
             </style>
         </head>
+        """
+    content = content1 + f"""
         <body>
             <h1>高德地图批量查询POI工具</h1>
-            <form action="/api/v1/process_csv" enctype="multipart/form-data" method="post">
+            <form action="{process_csv_url}" enctype="multipart/form-data" method="post">
                 <input name="input_file" type="file" multiple>
                 <input type="submit">
             </form>
