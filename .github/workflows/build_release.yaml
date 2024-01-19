@@ -48,6 +48,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: pois.dist/pois.exe
+          asset_path: pois-windows.exe/pois.exe
           asset_name: pois-windows.exe
           asset_content_type: application/octet-stream
