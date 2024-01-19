@@ -51,12 +51,12 @@ def process_csv(input_file: str = "input.csv",
         if start_line > 0:
             start_line = start_line - 1
         
-        print(f'处理文件{input_file}的{start_line + 1}到{end_line}行的数据')
+        print(f'处理文件{input_file}的{start_line + 1:4d}到{end_line:4d}行的数据')
              
         reader = csv.reader(infile)
         writer = csv.writer(outfile)
         for i, row in enumerate(reader):
-            print(f'查询第{i+1}行的地址: {row}')
+            print(f'查询第{i+1:4d}行的地址: {row[0]}')
             if start_line <= i < end_line:
                 address = row[0]
                 location = get_location(address, api_key)
