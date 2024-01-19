@@ -10,31 +10,42 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
 
-      - name: Run build.sh
-        run: |
-          bash build.sh
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: ./build.sh
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
+          body: |
+            This is an automated release created by GitHub Actions.
 
-      - name: Upload Release Asset
+      - name: Upload Executable
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: pois.build/exe-file-name
-          asset_name: exe-file-name
+          asset_path: pois.dist/pois.exe
+          asset_name: pois-windows.exe
           asset_content_type: application/octet-stream
