@@ -80,9 +80,8 @@ async def process_csv(input_file: UploadFile = File(...),
 #加入两个示例表格，分别为input.csv和output.csv，用于测试上传文件和下载文件功能。
 @router.get("/upload")
 async def upload(request: Request):
-    base_url = str(request.base_url)
     process_csv_url = request.url_for("process_csv")
-    print(base_url)
+    print(process_csv_url)
     content1 = """
     <html>
         <head>
