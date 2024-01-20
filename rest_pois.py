@@ -8,6 +8,7 @@ from uvicorn import Config, Server
 import asyncio
 import argparse
 from fastapi import Request
+from io import StringIO
 app = typer.Typer()
 router = APIRouter()
 def get_location(address: str, api_key: str) -> str:
@@ -32,6 +33,7 @@ def get_pois(location: str, api_key: str) -> List[Tuple[str, str]]:
 
 #生成下面函数的测试curl命令：
 #curl -X POST "http://127.0.0.1:8123/api/v1/process_csv" -H  "accept: application/json" -H  "Content-Type: multipart/form-data" -F "input_file=@input.csv"
+#curl -X POST "https://dmit-lax-netflix.homebrew.v6.rocks/api/v1/process_csv" -H  "accept: application/json" -H  "Content-Type: multipart/form-data" -F "input_file=@input.csv"
 @router.post("/process_csv")
 async def process_csv(input_file: UploadFile = File(...), 
                       api_key: str = "e813774a4aea1a0b6ca95f16bcd36cd4", 
@@ -46,12 +48,11 @@ async def process_csv(input_file: UploadFile = File(...),
     
     参数:
     """
-    with open(input_file.filename, mode='r', encoding='utf-8') as infile:
-        #如果end_line==0，那么就是到最后一行
-        if end_line == 0:
-            end_line = sum(1 for line in infile)
-    with open(input_file.filename, mode='r', encoding='utf-8') as infile, \
-         open("output.csv", mode='w', encoding='utf-8', newline='') as outfile:
+    infile = await input_file.read()
+    #如果end_line==0，那么就是到最后一行
+    if end_line == 0:
+        end_line = sum(1 for line in StringIO(infile.decode("utf-8")))
+    with open("output.csv", mode='w', encoding='utf-8', newline='') as outfile:
 
        #如果start_line==0，那么就是从第一行开始
         if start_line > 0:
@@ -59,7 +60,7 @@ async def process_csv(input_file: UploadFile = File(...),
         
         print(f'处理文件{input_file.filename}的{start_line + 1:4d}到{end_line:4d}行的数据')
              
-        reader = csv.reader(infile)
+        reader = csv.reader(StringIO(infile.decode("utf-8")))
         writer = csv.writer(outfile)
         for i, row in enumerate(reader):
             print(f'查询第{i+1:4d}行的地址: {row[0]}')
