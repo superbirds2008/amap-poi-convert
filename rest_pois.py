@@ -93,9 +93,9 @@ async def poi_rest(
 ):
     result = []
     for address in data["address_list"]:
-        location = get_location(address, data["api_key"])
+        location = await get_location(address, data["api_key"])
         if location:
-            pois = get_pois(location, data["api_key"])
+            pois = await get_pois(location, data["api_key"])
             for poi_id, poi_name in pois:
                 result.append([address, poi_id, poi_name])
 
@@ -150,10 +150,10 @@ async def poi_rest_relay(input_file: UploadFile = File(...),
                 ) as response:
                     response.raise_for_status()
                     poi_list = (await response.json())["data"]
-                for item in poi_list:
-                    # writer.writerow([item])
-                    print(item)
-                    writer.writerow(item)
+            for item in poi_list:
+                # writer.writerow([item])
+                print(item)
+                writer.writerow(item)
 
         except aiohttp.ClientError as error:
             raise HTTPException(status_code=500, detail=error)
@@ -204,7 +204,13 @@ async def upload(request: Request):
     content = content1 + f"""
         <body>
             <h1>高德地图批量查询POI工具</h1>
+            <form action="{relay_rest_url}" enctype="multipart/form-data" method="post">
+                <i>境外部署模式</i>
+                <input name="input_file" type="file" multiple>
+                <input type="submit">
+            </form>
             <form action="{process_csv_url}" enctype="multipart/form-data" method="post">
+                <i>境内部署模式</i>
                 <input name="input_file" type="file" multiple>
                 <input type="submit">
             </form>
