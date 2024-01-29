@@ -1,0 +1,13 @@
+[Unit]
+Description=Rest POIs Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/rest_pois.bin -U http://localhost:8340/api/v1/poi_rest
+WorkingDirectory=/root
+User=root
+Group=root
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

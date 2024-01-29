@@ -1,0 +1,11 @@
+[Unit]
+Description=SSH tunnel service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/ssh -i /home/pengzhan/.ssh/id_ed25519 -N -L 8340:localhost:8341 pengzhan@123.56.15.69
+Restart=always
+User=pengzhan
+
+[Install]
+WantedBy=multi-user.target

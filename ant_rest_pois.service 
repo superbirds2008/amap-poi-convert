@@ -1,0 +1,13 @@
+[Unit]
+Description=Rest POIs Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/rest_pois.bin
+WorkingDirectory=/root
+User=root
+Group=root
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
